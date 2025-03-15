@@ -30,6 +30,7 @@ public:
     void defaultConfig() override {
         if (settings.getSettingByName<float>("intensity") == nullptr) settings.addSetting("intensity", 0.88f);
         if (settings.getSettingByName<float>("intensity2") == nullptr) settings.addSetting("intensity2", 6.0f);
+        if (settings.getSettingByName<float>("sigma") == nullptr) settings.addSetting("sigma", 3.0f);
     }
 
     void settingsRender(float settingsOffset) override {
@@ -47,8 +48,10 @@ public:
                                   Constraints::RelativeConstraint(0.88f, "height"));
 
         this->addHeader("Misc");
-        this->addSlider("Bleed Factor", "Scale of bleeding of previous frames into current.", this->settings.getSettingByName<float>("intensity")->value, 10.0f, 0.f, true);
+        this->addSlider("Bleed Factor", "Scale of bleeding of previous frames into current.", this->settings.getSettingByName<float>("intensity")->value, 1.0f, 0.f, true);
         this->addSlider("Intensity", "Amount of previous frames to render.", this->settings.getSettingByName<float>("intensity2")->value, 30, 0, true);
+        this->addSlider("Alpha", "Amogus.", this->settings.getSettingByName<float>("sigma")->value, 10.0f, 0.f, true);
+
 
         FlarialGUI::UnsetScrollView();
 
@@ -79,7 +82,7 @@ public:
             }
 
             // Render with opacity
-            float alpha = 0.3f;
+            float alpha = this->settings.getSettingByName<float>("sigma")->value;
             for (const auto& frame : previousFrames) {
                 if (!SwapchainHook::queue) {
                     ImageWithOpacity(frame, {MC::windowSize.x, MC::windowSize.y}, alpha);
